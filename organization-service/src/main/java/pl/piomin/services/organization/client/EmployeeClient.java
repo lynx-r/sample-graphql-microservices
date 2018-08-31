@@ -1,9 +1,5 @@
 package pl.piomin.services.organization.client;
 
-import com.apollographql.apollo.ApolloCall.Callback;
-import com.apollographql.apollo.ApolloClient;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
@@ -11,14 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.piomin.services.organization.clientgql.EmployeeGQL;
 import pl.piomin.services.organization.model.Employee;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Component
 public class EmployeeClient {
@@ -32,57 +25,21 @@ public class EmployeeClient {
 	
 	@Autowired
 	private EurekaClient discoveryClient;
-	
-	public List<Employee> findByDepartment(Long departmentId) throws InterruptedException {
-		List<Employee> employees = new ArrayList<>();
+
+	public List<Employee> findByDepartment(Long departmentId) {
 		Application app = discoveryClient.getApplication(SERVICE_NAME);
 		InstanceInfo ii = app.getInstances().get(r.nextInt(app.size()));
-    ApolloClient client = ApolloClient.builder().serverUrl(String.format(SERVER_URL, ii.getPort())).build();
-		CountDownLatch lock = new CountDownLatch(1);
-		client.query(EmployeesByDepartmentQuery.builder().departmentId(departmentId.intValue()).build()).enqueue(new Callback<EmployeesByDepartmentQuery.Data>() {
-
-			@Override
-			public void onFailure(ApolloException ex) {
-				LOGGER.info("Err: {}", ex);
-				lock.countDown();
-			}
-
-			@Override
-			public void onResponse(Response<EmployeesByDepartmentQuery.Data> res) {
-				LOGGER.info("Res: {}", res);
-				employees.addAll(res.data().employeesByDepartment().stream().map(emp -> new Employee(Long.valueOf(emp.id()), emp.name(), null)).collect(Collectors.toList()));
-				lock.countDown();
-			}
-
-		});
-		lock.await(TIMEOUT, TimeUnit.MILLISECONDS);
-		return employees;
+		String serverUrl = String.format(SERVER_URL, ii.getPort());
+		EmployeeGQL clientGQL = new EmployeeGQL();
+		return clientGQL.getEmployeesByDepartmentQuery(serverUrl, departmentId.intValue());
 	}
-	
-	public List<Employee> findByOrganization(Long organizationId) throws InterruptedException {
-		List<Employee> employees = new ArrayList<>();
+
+	public List<Employee> findByOrganization(Long organizationId) {
 		Application app = discoveryClient.getApplication(SERVICE_NAME);
 		InstanceInfo ii = app.getInstances().get(r.nextInt(app.size()));
-		ApolloClient client = ApolloClient.builder().serverUrl(String.format(SERVER_URL, ii.getPort())).build();
-		CountDownLatch lock = new CountDownLatch(1);
-		client.query(EmployeesByOrganizationQuery.builder().organizationId(organizationId.intValue()).build()).enqueue(new Callback<EmployeesByOrganizationQuery.Data>() {
-
-			@Override
-			public void onFailure(ApolloException ex) {
-				LOGGER.info("Err: {}", ex);
-				lock.countDown();
-			}
-
-			@Override
-			public void onResponse(Response<EmployeesByOrganizationQuery.Data> res) {
-				LOGGER.info("Res: {}", res);
-				employees.addAll(res.data().employeesByOrganization().stream().map(emp -> new Employee(Long.valueOf(emp.id()), emp.name(), null)).collect(Collectors.toList()));
-				lock.countDown();
-			}
-
-		});
-		lock.await(TIMEOUT, TimeUnit.MILLISECONDS);
-		return employees;
+		String serverUrl = String.format(SERVER_URL, ii.getPort());
+		EmployeeGQL clientGQL = new EmployeeGQL();
+		return clientGQL.getEmployeesByOrganizationQuery(serverUrl, organizationId.intValue());
 	}
 	
 }

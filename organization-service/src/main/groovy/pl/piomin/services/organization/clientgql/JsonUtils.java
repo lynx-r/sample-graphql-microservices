@@ -1,4 +1,4 @@
-package pl.piomin.services.department.clientgql;
+package pl.piomin.services.organization.clientgql;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
