@@ -1,0 +1,6 @@
+rootProject.name = 'sample-graphql-microservices'
+include 'department-service'
+include 'discovery-service'
+include 'employee-service'
+include 'organization-service'
+

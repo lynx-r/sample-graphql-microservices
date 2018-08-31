@@ -12,5 +12,11 @@
 		<module>department-service</module>
 		<module>organization-service</module>	
 	</modules>
-	
+
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
 </project>

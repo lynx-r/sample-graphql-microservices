@@ -1,8 +1,11 @@
 package pl.piomin.services.department.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonTypeName("Department")
 public class Department {
 
 	private Long id;
@@ -11,7 +14,7 @@ public class Department {
 	private List<Employee> employees = new ArrayList<>();
 
 	public Department() {
-		
+
 	}
 
 	public Department(Long organizationId, String name) {

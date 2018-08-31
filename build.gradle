@@ -1,0 +1,131 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.4.RELEASE'
+    }
+    repositories {
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        flatDir {
+            dirs 'lib'
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'com.apollographql.apollo:apollo-gradle-plugin:1.0.1-SNAPSHOT'
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+    }
+}
+
+plugins {
+    id 'net.ltgt.apt' version '0.15'
+//    id  'com.github.spotbugs' version '1.6.1'
+}
+
+apply plugin: 'groovy'
+
+allprojects {
+    apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'com.apollographql.android'
+
+    group = 'com.workingbit'
+}
+
+version = '1.0'
+sourceCompatibility = 1.10
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+subprojects { subproject ->
+    if (subproject.name.endsWith('service')) {
+    }
+
+    sourceSets {
+        main {
+            java { srcDirs = [] }
+            groovy { srcDirs = ["src/main/java", "src/main/groovy"] }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Finchley.SR1'
+//            mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+        }
+    }
+}
+
+configure(subprojects) {
+    dependencies {
+//        compile('org.springframework.boot:spring-boot-starter-aop')
+//        compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+//        compile('org.springframework.boot:spring-boot-starter-data-redis-reactive')
+//        compile('org.springframework.boot:spring-boot-starter-integration')
+//        compile('org.springframework.boot:spring-boot-starter-validation')
+//        compile('org.springframework.boot:spring-boot-starter-webflux')
+//        compile('org.springframework.session:spring-session-data-redis')
+        compile('org.codehaus.groovy:groovy')
+//        runtime('org.springframework.boot:spring-boot-devtools')
+        compile("org.springframework.boot:spring-boot-devtools")
+        compileOnly('org.projectlombok:lombok:1.16.22')
+//        testCompile('org.springframework.boot:spring-boot-starter-test')
+//        testCompile('io.projectreactor:reactor-test')
+//
+//        compile 'org.apache.commons:commons-lang3:3.5'
+//        compile 'org.apache.commons:commons-collections4:4.1'
+    }
+}
+
+configure(subprojects.findAll { it.name.endsWith('service') && it.name != 'discovery-service' }) { p ->
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+//        compile('org.springframework.cloud:spring-cloud-starter-config')
+        compile('org.springframework.cloud:spring-cloud-starter-openfeign')
+        compile('org.springframework.cloud:spring-cloud-openfeign-core')
+
+        compile('org.springframework.boot:spring-boot-starter-web')
+        compile('org.springframework.boot:spring-boot-starter-actuator')
+
+        compile('com.graphql-java:graphql-spring-boot-starter:5.0.2')
+        compile('com.graphql-java:graphiql-spring-boot-starter:5.0.2')
+        compile('com.graphql-java:voyager-spring-boot-starter:5.0.2')
+
+        compile('com.graphql-java:graphql-java:9.2')
+        compile('com.graphql-java:graphql-java-tools:5.2.3')
+
+        compile 'com.mashape.unirest:unirest-java:1.4.9'
+
+        compile('org.springframework.cloud:spring-cloud-starter-sleuth')
+
+        compile 'com.apollographql.apollo:apollo-runtime:1.0.1-SNAPSHOT'
+
+        compile 'com.github.grooviter:gql-core:0.3.3'
+    }
+}
+
+project(':discovery-service') {
+    version = '1.0'
+
+    dependencies {
+        compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-server')
+        compile('org.springframework.cloud:spring-cloud-starter-config')
+    }
+}

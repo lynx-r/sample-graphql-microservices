@@ -7,8 +7,6 @@ type OrganizationQueries {
   organizations: [Organization]
   organization(id: ID!): Organization!
   organizationByIdWithEmployees(id: Int!): Organization
-  organizationByIdWithDepartments(id: Int!): Organization
-  organizationByIdWithDepartmentsAndEmployees(id: Int!): Organization
 }
 
 type OrganizationMutations {
@@ -39,5 +37,4 @@ type Department {
 type Employee {
   id: ID!
   name: String!
-  position: String!
 }

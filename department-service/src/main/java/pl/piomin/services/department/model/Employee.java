@@ -1,12 +1,15 @@
 package pl.piomin.services.department.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeName("Employee")
 public class Employee {
 
 	private Long id;
 	private String name;
 	private String position;
 	private int salary;
-	
+
 	public Employee() {
 
 	}
