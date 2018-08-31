@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Violates DRY. I suggest having common module for all web services but not right now.
+ * Violates DRY. I suggest to use common module for all web services but not right now.
  */
 public class JsonUtils {
   private static final ObjectMapper mapper;
