@@ -3,5 +3,5 @@ Modification of the article:
 
 ## Features:
 
-* GQL from Groovter for communication between microservices
+* [GQL](https://grooviter.github.io/gql/docs/html5/index.html) from Groovter for communication between microservices
 * Gradle build system
